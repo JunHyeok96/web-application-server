@@ -127,4 +127,8 @@ public class HttpRequestUtils {
   public static HttpRequestMethod parseMethod(String line){
         return HttpRequestMethod.valueOf(line.split( " ")[0]);
   }
+
+  public static int parseContentLength(String line){
+        return Integer.parseInt(line.split(" ")[1]);
+  }
 }

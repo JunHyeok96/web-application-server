@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import util.HttpRequestMethod;
 import util.HttpRequestUtils;
+import util.IOUtils;
 
 public class RequestHandler extends Thread {
 
@@ -20,7 +21,8 @@ public class RequestHandler extends Thread {
 
   private Socket connection;
 
-  private Controller controller = new Controller();
+  private static final GetController getController = new GetController();
+  private static final PostController postController = new PostController();
 
   public RequestHandler(Socket connectionSocket) {
     this.connection = connectionSocket;
@@ -35,17 +37,28 @@ public class RequestHandler extends Thread {
       BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(in));
       String line = "";
       String url = "";
+      int contentLength = 0;
       int lineCount = 0;
       while (!(line = bufferedReader.readLine()).equals("")) {
-        if (lineCount++ == 0) {
+        if (lineCount == 0) {
           url = line;
+        }else if(lineCount == 3 && line.contains("Content-Length")){
+          contentLength = HttpRequestUtils.parseContentLength(line);
         }
+        lineCount++;
         log.debug(line);
       }
       String requestPath = HttpRequestUtils.parseRequestPath(url);
       HttpRequestMethod method = HttpRequestUtils.parseMethod(url);
       Map<String, String> paramMap = HttpRequestUtils.parseParameter(url);
-      byte[] body = controller.route(requestPath, paramMap, method);
+      byte[] body = null;
+      if(method == HttpRequestMethod.GET){
+        body = getController.route(requestPath, paramMap);
+      }else if(method == HttpRequestMethod.POST){
+        String inputBody = IOUtils.readData(bufferedReader, contentLength);
+        Map<String, String> bodyMap = HttpRequestUtils.parseQueryString(inputBody);
+        body = postController.route(requestPath, paramMap, bodyMap);
+      }
       DataOutputStream dos = new DataOutputStream(out);
       response200Header(dos, body.length);
       responseBody(dos, body);
@@ -53,7 +66,6 @@ public class RequestHandler extends Thread {
       log.error(e.getMessage());
     }
   }
-
 
 
   private void response200Header(DataOutputStream dos, int lengthOfBodyContent) {
