@@ -1,6 +1,10 @@
 package util;
 
+import static org.junit.Assert.assertNotNull;
+
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
 import java.io.StringReader;
 
 import org.junit.Test;
@@ -17,5 +21,11 @@ public class IOUtilsTest {
         BufferedReader br = new BufferedReader(sr);
 
         logger.debug("parse body : {}", IOUtils.readData(br, data.length()));
+    }
+
+    @Test
+    public void readIndexFile() throws IOException{
+        String url = "/index.html";
+        assertNotNull(IOUtils.readFile(new File("./webapp" + url)));
     }
 }

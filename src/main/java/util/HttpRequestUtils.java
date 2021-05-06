@@ -106,4 +106,8 @@ public class HttpRequestUtils {
             return "Pair [key=" + key + ", value=" + value + "]";
         }
     }
+
+  public static String parseUrl(String line) {
+    return line.split(" ")[1];
+  }
 }
