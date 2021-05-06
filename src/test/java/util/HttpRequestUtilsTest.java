@@ -72,8 +72,41 @@ public class HttpRequestUtilsTest {
     }
 
     @Test
-    public void parseUrl() {
+    public void parseRequestPath() {
         String url = "GET /index.html HTTP/1.1";
-        assertEquals(HttpRequestUtils.parseUrl(url), "/index.html");
+        assertEquals(HttpRequestUtils.parseRequestPath(url), "/index.html");
     }
+
+    @Test
+    public void parseRequestPath_파라미터있음(){
+        String url = "GET /user/create?userId=junhyeok96&password=1234&name=jerry&email=abcd@gmail.com HTTP/1.1";
+        assertEquals(HttpRequestUtils.parseRequestPath(url), "/user/create");
+    }
+
+
+    @Test
+    public void parseHttpMethod(){
+        String url = "GET /index.html HTTP/1.1";
+        assertEquals(HttpRequestUtils.parseMethod(url), HttpRequestMethod.GET);
+    }
+
+    @Test
+    public void parseParams(){
+        String url = "GET /user/create?userId=junhyeok96&password=1234&name=jerry&email=abcd@gmail.com HTTP/1.1";
+        Map<String, String> paramMap = HttpRequestUtils.parseParameter(url);
+
+        assertEquals(paramMap.get("userId"), "junhyeok96");
+        assertEquals(paramMap.get("password"), "1234");
+        assertEquals(paramMap.get("name"),"jerry");
+        assertEquals(paramMap.get("email"), "abcd@gmail.com");
+    }
+
+    @Test
+    public void parseParams_파라미터_없음(){
+        String url = "GET /user/create HTTP/1.1";
+        Map<String, String> paramMap = HttpRequestUtils.parseParameter(url);
+
+        assertEquals(paramMap.size(), 0);
+    }
+
 }

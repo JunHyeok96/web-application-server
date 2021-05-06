@@ -1,6 +1,7 @@
 package util;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -107,7 +108,23 @@ public class HttpRequestUtils {
         }
     }
 
-  public static String parseUrl(String line) {
-    return line.split(" ")[1];
+  public static String parseRequestPath(String line) {
+      line = line.split(" ")[1];
+      int index = line.indexOf("?");
+      if(index == -1){
+          return line.substring(0, line.length());
+      }
+      return line.substring(0, index);
+  }
+
+  public static Map<String, String> parseParameter(String line){
+      line = line.split(" ")[1];
+      int index = line.indexOf("?");
+      String params = line.substring(index + 1);
+      return parseQueryString(params);
+  }
+
+  public static HttpRequestMethod parseMethod(String line){
+        return HttpRequestMethod.valueOf(line.split( " ")[0]);
   }
 }
