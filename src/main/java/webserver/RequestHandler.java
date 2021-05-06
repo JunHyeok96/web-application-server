@@ -34,28 +34,19 @@ public class RequestHandler extends Thread {
 
     try (InputStream in = connection.getInputStream(); OutputStream out = connection
         .getOutputStream()) {
-      BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(in));
-      String line = "";
-      String url = "";
-      int contentLength = 0;
-      int lineCount = 0;
-      while (!(line = bufferedReader.readLine()).equals("")) {
-        if (lineCount == 0) {
-          url = line;
-        }else if(lineCount == 3 && line.contains("Content-Length")){
-          contentLength = HttpRequestUtils.parseContentLength(line);
-        }
-        lineCount++;
-        log.debug(line);
-      }
+      BufferedReader br = new BufferedReader(new InputStreamReader(in));
+      Map<String, String> headerMap = IOUtils.readHeader(br);
+      String url = headerMap.get("Header");
       String requestPath = HttpRequestUtils.parseRequestPath(url);
       HttpRequestMethod method = HttpRequestUtils.parseMethod(url);
       Map<String, String> paramMap = HttpRequestUtils.parseParameter(url);
+      log.debug(headerMap.toString());
       byte[] body = null;
       if(method == HttpRequestMethod.GET){
         body = getController.route(requestPath, paramMap);
       }else if(method == HttpRequestMethod.POST){
-        String inputBody = IOUtils.readData(bufferedReader, contentLength);
+        int contentLength = HttpRequestUtils.parseContentLength(headerMap.get("Content-Length"));
+        String inputBody = IOUtils.readData(br, contentLength);
         Map<String, String> bodyMap = HttpRequestUtils.parseQueryString(inputBody);
         body = postController.route(requestPath, paramMap, bodyMap);
       }

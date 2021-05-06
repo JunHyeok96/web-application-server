@@ -112,7 +112,7 @@ public class HttpRequestUtils {
       line = line.split(" ")[1];
       int index = line.indexOf("?");
       if(index == -1){
-          return line.substring(0, line.length());
+          return line;
       }
       return line.substring(0, index);
   }
@@ -129,6 +129,6 @@ public class HttpRequestUtils {
   }
 
   public static int parseContentLength(String line){
-        return Integer.parseInt(line.split(" ")[1]);
+        return Integer.parseInt(line);
   }
 }

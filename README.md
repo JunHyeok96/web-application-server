@@ -24,7 +24,8 @@
 url별 메서드를 별도로 구분하는 것이 좋을까? 고민이된다.
 
 ### 요구사항 3 - post 방식으로 회원가입
-* 
+* http method에 따라 request메세지가 달라진다. post방식 content-length는
+ post요청에 대해서만 확인해야하는데 이걸 분기 처리하니 indent가
 
 ### 요구사항 4 - redirect 방식으로 이동
 * 

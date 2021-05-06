@@ -13,7 +13,8 @@ public class PostController {
   public byte[] route(String url, Map<String, String> paramMap, Map<String, String> bodyMap) throws IOException {
     if (url.equals("/user/create")) {
       User user = User.paramsToUser(bodyMap);
-      log.debug(user.toString());
+      log.debug("save : " + user.toString());
+      return user.toString().getBytes();
     }
     return "Hello World".getBytes();
   }
