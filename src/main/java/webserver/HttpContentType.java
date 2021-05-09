@@ -1,4 +1,4 @@
-package util;
+package webserver;
 
 public enum HttpContentType {
   HTML("text/html;charset=utf-8"), CSS("text/css");
@@ -7,5 +7,9 @@ public enum HttpContentType {
 
   HttpContentType(String contentType){
     this.contentType = contentType;
+  }
+
+  public String getContentType() {
+    return contentType;
   }
 }

@@ -8,6 +8,7 @@ import java.util.Map;
 import org.junit.Test;
 
 import util.HttpRequestUtils.Pair;
+import webserver.HttpMethod;
 
 public class HttpRequestUtilsTest {
     @Test
@@ -87,7 +88,7 @@ public class HttpRequestUtilsTest {
     @Test
     public void parseHttpMethod(){
         String url = "GET /index.html HTTP/1.1";
-        assertEquals(HttpRequestUtils.parseMethod(url), HttpRequestMethod.GET);
+        assertEquals(HttpRequestUtils.parseMethod(url), HttpMethod.GET);
     }
 
     @Test

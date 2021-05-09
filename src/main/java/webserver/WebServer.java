@@ -3,6 +3,8 @@ package webserver;
 import java.net.ServerSocket;
 import java.net.Socket;
 
+import java.util.HashMap;
+import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -11,6 +13,7 @@ public class WebServer {
     private static final int DEFAULT_PORT = 8080;
 
     public static void main(String args[]) throws Exception {
+        RequestHandler.setUp();
         int port = 0;
         if (args == null || args.length == 0) {
             port = DEFAULT_PORT;
@@ -31,4 +34,6 @@ public class WebServer {
             }
         }
     }
+
+
 }
