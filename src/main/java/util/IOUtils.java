@@ -35,8 +35,8 @@ public class IOUtils {
     public static Map<String, String> readHeader(BufferedReader br) throws IOException {
         Map<String, String> headerMap = new HashMap<>();
         String line = br.readLine();
-        headerMap.put("Header", line);
-        log.debug(line);
+        headerMap.put("Request-Line", line);
+        log.debug("Request-Line : {}", line);
         while (!(line = br.readLine()).equals("")) {
             log.debug(line);
             String[] header = line.split(":");

@@ -19,7 +19,7 @@ public class PostController {
   private UserService userService = new UserService();
 
   public void route(Map<String, String> headerMap, BufferedReader br, OutputStream out) throws IOException {
-    String url = headerMap.get("Header");
+    String url = headerMap.get("Request-Line");
     String requestPath = HttpRequestUtils.parseRequestPath(url);
     Map<String, String> paramMap = HttpRequestUtils.parseParameter(url);
     int contentLength = HttpRequestUtils.parseContentLength(headerMap.get("Content-Length"));
@@ -30,12 +30,11 @@ public class PostController {
     if (requestPath.equals("/user/create")) {
       User user = User.paramsToUser(bodyMap);
       userService.saveUser(user);
-      log.debug("save : " + user.toString());
+      log.debug("save : {}", user.toString());
       body = user.toString().getBytes();
       HttpResponseUtils.response302Header(dos, body.length, "/index.html");
     } else if (requestPath.equals("/user/login")) {
         boolean isSuccessLogin = userService.login(bodyMap.get("userId"), bodyMap.get("password"));
-        log.debug(bodyMap.get("userId") + " " +  bodyMap.get("password") );
         if(isSuccessLogin){
           HttpResponseUtils.response302Header(dos, body.length, "/index.html");
           HttpResponseUtils.setCookie(dos, "logined", "true");

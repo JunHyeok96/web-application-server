@@ -35,7 +35,7 @@ public class RequestHandler extends Thread {
         .getOutputStream()) {
       BufferedReader br = new BufferedReader(new InputStreamReader(in));
       Map<String, String> headerMap = IOUtils.readHeader(br);
-      String url = headerMap.get("Header");
+      String url = headerMap.get("Request-Line");
       HttpRequestMethod method = HttpRequestUtils.parseMethod(url);
       if (method == HttpRequestMethod.GET) {
         getController.route(headerMap, out);

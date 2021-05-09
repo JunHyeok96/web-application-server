@@ -19,7 +19,7 @@ public class GetController {
   private final UserService userService = new UserService();
 
   public void route(Map<String, String> headerMap, OutputStream out) throws IOException {
-    String url = headerMap.get("Header");
+    String url = headerMap.get("Request-Line");
     String requestPath = HttpRequestUtils.parseRequestPath(url);
     Map<String, String> paramMap = HttpRequestUtils.parseParameter(url);
     DataOutputStream dos = new DataOutputStream(out);
