@@ -40,4 +40,8 @@ public class User {
         return new User(userParams.get("userId"), userParams.get("password"), userParams.get("name"),
             userParams.get("email"));
     }
+
+    public boolean isMatchPassword(String password){
+        return this.password.equals(password);
+    }
 }

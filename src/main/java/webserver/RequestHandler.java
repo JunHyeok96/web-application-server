@@ -31,67 +31,20 @@ public class RequestHandler extends Thread {
   public void run() {
     log.debug("New Client Connect! Connected IP : {}, Port : {}", connection.getInetAddress(),
         connection.getPort());
-
     try (InputStream in = connection.getInputStream(); OutputStream out = connection
         .getOutputStream()) {
       BufferedReader br = new BufferedReader(new InputStreamReader(in));
       Map<String, String> headerMap = IOUtils.readHeader(br);
       String url = headerMap.get("Header");
-      String requestPath = HttpRequestUtils.parseRequestPath(url);
       HttpRequestMethod method = HttpRequestUtils.parseMethod(url);
-      Map<String, String> paramMap = HttpRequestUtils.parseParameter(url);
-      log.debug(headerMap.toString());
-      byte[] body = null;
-      if(method == HttpRequestMethod.GET){
-        body = getController.route(requestPath, paramMap);
-      }else if(method == HttpRequestMethod.POST){
-        int contentLength = HttpRequestUtils.parseContentLength(headerMap.get("Content-Length"));
-        String inputBody = IOUtils.readData(br, contentLength);
-        Map<String, String> bodyMap = HttpRequestUtils.parseQueryString(inputBody);
-        body = postController.route(requestPath, paramMap, bodyMap);
+      if (method == HttpRequestMethod.GET) {
+        getController.route(headerMap, out);
+      } else if (method == HttpRequestMethod.POST) {
+        postController.route(headerMap, br, out);
       }
-      DataOutputStream dos = new DataOutputStream(out);
-      if(requestPath.equals("/user/create")){
-        response302Header(dos, body.length, "/index.html");
-      }else{
-        response200Header(dos, body.length);
-      }
-      responseBody(dos, body);
     } catch (IOException e) {
       log.error(e.getMessage());
     }
   }
 
-
-  private void response200Header(DataOutputStream dos, int lengthOfBodyContent) {
-    try {
-      dos.writeBytes("HTTP/1.1 200 OK \r\n");
-      dos.writeBytes("Content-Type: text/html;charset=utf-8\r\n");
-      dos.writeBytes("Content-Length: " + lengthOfBodyContent + "\r\n");
-      dos.writeBytes("\r\n");
-    } catch (IOException e) {
-      log.error(e.getMessage());
-    }
-  }
-
-  private void response302Header(DataOutputStream dos, int lengthOfBodyContent, String route) {
-    try {
-      dos.writeBytes("HTTP/1.1 302 Found \r\n");
-      dos.writeBytes("Location: " + route + " \r\n");
-      dos.writeBytes("Content-Type: text/html;charset=utf-8\r\n");
-      dos.writeBytes("Content-Length: " + lengthOfBodyContent + "\r\n");
-      dos.writeBytes("\r\n");
-    } catch (IOException e) {
-      log.error(e.getMessage());
-    }
-  }
-
-  private void responseBody(DataOutputStream dos, byte[] body) {
-    try {
-      dos.write(body, 0, body.length);
-      dos.flush();
-    } catch (IOException e) {
-      log.error(e.getMessage());
-    }
-  }
 }
