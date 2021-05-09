@@ -1,18 +1,23 @@
 package webserver;
 
+import db.DataBase;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Map;
+import javax.swing.text.Style;
 import model.User;
+import service.UserService;
 import util.HttpRequestMethod;
 import util.HttpRequestUtils;
 import util.HttpResponseUtils;
 import util.IOUtils;
 
 public class GetController {
+
+  private final UserService userService = new UserService();
 
   public void route(Map<String, String> headerMap, OutputStream out) throws IOException {
     String url = headerMap.get("Header");
@@ -27,6 +32,20 @@ public class GetController {
       User user = User.paramsToUser(paramMap);
       body = user.toString().getBytes();
       HttpResponseUtils.response200Header(dos, body.length);
+    } else if (requestPath.equals("/user/list")) {
+      boolean isLogined = Boolean
+          .parseBoolean(HttpRequestUtils.parseCookies(headerMap.get("Cookie")).get("logined"));
+      if (isLogined) {
+        StringBuilder sb = new StringBuilder();
+        for (User user : userService.findUserList()) {
+          sb.append(user.getName());
+          sb.append("\n");
+        }
+        body = sb.toString().getBytes();
+        HttpResponseUtils.response200Header(dos, body.length);
+      } else {
+        HttpResponseUtils.response302Header(dos, body.length, "/user/login.html");
+      }
     }
     HttpResponseUtils.responseBody(dos, body);
   }
