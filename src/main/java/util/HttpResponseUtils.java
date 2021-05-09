@@ -10,23 +10,31 @@ public class HttpResponseUtils {
 
   private static final Logger log = LoggerFactory.getLogger(RequestHandler.class);
 
-  private HttpResponseUtils(){}
+  private HttpResponseUtils() {
+  }
 
   public static void response200Header(DataOutputStream dos, int lengthOfBodyContent) {
     try {
       dos.writeBytes("HTTP/1.1 200 OK \r\n");
-      dos.writeBytes("Content-Type: text/html;charset=utf-8\r\n");
       dos.writeBytes("Content-Length: " + lengthOfBodyContent + "\r\n");
     } catch (IOException e) {
       log.error(e.getMessage());
     }
   }
 
-  public static void response302Header(DataOutputStream dos, int lengthOfBodyContent, String route) {
+  public static void setContentType(DataOutputStream dos, HttpContentType type) {
+    try {
+      dos.writeBytes("Content-Type: " + type.contentType + "\r\n");
+    } catch (IOException e) {
+      log.error(e.getMessage());
+    }
+  }
+
+  public static void response302Header(DataOutputStream dos, int lengthOfBodyContent,
+      String route) {
     try {
       dos.writeBytes("HTTP/1.1 302 Found \r\n");
       dos.writeBytes("Location: " + route + " \r\n");
-      dos.writeBytes("Content-Type: text/html;charset=utf-8\r\n");
       dos.writeBytes("Content-Length: " + lengthOfBodyContent + "\r\n");
     } catch (IOException e) {
       log.error(e.getMessage());
@@ -35,7 +43,7 @@ public class HttpResponseUtils {
 
   public static void setCookie(DataOutputStream dos, String key, String value) {
     try {
-      dos.writeBytes("Set-Cookie: " + key + "=" + value +"\r\n");
+      dos.writeBytes("Set-Cookie: " + key + "=" + value + "\r\n");
     } catch (IOException e) {
       log.error(e.getMessage());
     }
