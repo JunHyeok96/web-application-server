@@ -51,7 +51,11 @@ public class RequestHandler extends Thread {
         body = postController.route(requestPath, paramMap, bodyMap);
       }
       DataOutputStream dos = new DataOutputStream(out);
-      response200Header(dos, body.length);
+      if(requestPath.equals("/user/create")){
+        response302Header(dos, body.length, "/index.html");
+      }else{
+        response200Header(dos, body.length);
+      }
       responseBody(dos, body);
     } catch (IOException e) {
       log.error(e.getMessage());
@@ -62,6 +66,18 @@ public class RequestHandler extends Thread {
   private void response200Header(DataOutputStream dos, int lengthOfBodyContent) {
     try {
       dos.writeBytes("HTTP/1.1 200 OK \r\n");
+      dos.writeBytes("Content-Type: text/html;charset=utf-8\r\n");
+      dos.writeBytes("Content-Length: " + lengthOfBodyContent + "\r\n");
+      dos.writeBytes("\r\n");
+    } catch (IOException e) {
+      log.error(e.getMessage());
+    }
+  }
+
+  private void response302Header(DataOutputStream dos, int lengthOfBodyContent, String route) {
+    try {
+      dos.writeBytes("HTTP/1.1 302 Found \r\n");
+      dos.writeBytes("Location: " + route + " \r\n");
       dos.writeBytes("Content-Type: text/html;charset=utf-8\r\n");
       dos.writeBytes("Content-Length: " + lengthOfBodyContent + "\r\n");
       dos.writeBytes("\r\n");
