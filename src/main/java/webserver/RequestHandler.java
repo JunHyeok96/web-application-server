@@ -19,7 +19,6 @@ public class RequestHandler extends Thread {
 
   private static final Logger log = LoggerFactory.getLogger(RequestHandler.class);
 
-  private static Map<String, Controller> controllerMap = new HashMap<>();
 
   private Socket connection;
 
@@ -35,11 +34,11 @@ public class RequestHandler extends Thread {
         .getOutputStream()) {
       HttpRequest request = new HttpRequest(in);
       HttpResponse response = new HttpResponse(out);
-      if (!controllerMap.containsKey(request.getPath())) {
+      if (!RequestMapping.getController(request.getPath()).isPresent()) {
         getDefaultPath(request.getPath(), response);
         return;
       }
-      Controller controller = controllerMap.get(request.getPath());
+      Controller controller = RequestMapping.getController(request.getPath()).get();
       controller.service(request, response);
     } catch (IOException e) {
       log.error(e.getMessage());
@@ -62,7 +61,8 @@ public class RequestHandler extends Thread {
 
   private void getStaticFile(String path, HttpResponse response) throws IOException {
     if (path.endsWith(".html")) {
-      response.addHeader(HttpHeader.CONTENT_TYPE.getHeader(), HttpContentType.HTML.getContentType());
+      response
+          .addHeader(HttpHeader.CONTENT_TYPE.getHeader(), HttpContentType.HTML.getContentType());
     } else if (path.endsWith(".css")) {
       response.addHeader(HttpHeader.CONTENT_TYPE.getHeader(), HttpContentType.CSS.getContentType());
     }
@@ -71,9 +71,4 @@ public class RequestHandler extends Thread {
   }
 
 
-  public static void setUp() {
-    controllerMap.put("/user/login", new LoginController());
-    controllerMap.put("/user/create", new CreateUserController());
-    controllerMap.put("/user/list", new ListUserController());
-  }
 }

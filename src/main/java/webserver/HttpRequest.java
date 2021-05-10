@@ -39,8 +39,13 @@ public class HttpRequest {
     return this.parameterMap.get(parameter);
   }
 
-  public String getRequestBody(String key){
+  public String getRequestBody(String key) {
     return this.requestBody.get(key);
+  }
+
+  public boolean isLogined() {
+    return Boolean.parseBoolean(
+        HttpRequestUtils.parseCookies(getHeader(HttpHeader.COOKIE.getHeader())).get("logined"));
   }
 
   private void parseRequest() throws IOException {
@@ -54,7 +59,7 @@ public class HttpRequest {
       String[] header = line.split(":");
       this.headerMap.put(header[0].trim(), header[1].trim());
     }
-    if(method == HttpMethod.POST){
+    if (method.isPost()) {
       parseRequestBody(br, Integer.parseInt(this.getHeader(HttpHeader.CONTENT_LENGTH.getHeader())));
     }
   }
@@ -64,5 +69,4 @@ public class HttpRequest {
     System.out.println(body);
     this.requestBody = HttpRequestUtils.parseQueryString(body);
   }
-
 }
